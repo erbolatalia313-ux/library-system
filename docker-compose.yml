@@ -1,0 +1,30 @@
+
+services:
+  db:
+    image: postgres:14
+    container_name: library_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: library
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  backend:
+    build: .
+    container_name: library_backend
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://postgres:password@db/library
+      SECRET_KEY: supersecretkey
+      ACCESS_TOKEN_EXPIRE_MINUTES: 60
+    depends_on:
+      - db
+
+volumes:
+  pgdata:
